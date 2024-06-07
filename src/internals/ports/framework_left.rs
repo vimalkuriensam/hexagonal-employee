@@ -1,7 +1,7 @@
 use axum::Router;
 
 pub trait ServerPort {
-    fn serve();
+    async fn serve(&self);
 }
 
 pub trait RoutesPort {
