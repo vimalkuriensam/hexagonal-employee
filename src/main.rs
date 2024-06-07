@@ -4,6 +4,8 @@ use internals::{
 };
 
 mod internals;
+mod models;
+mod config;
 
 #[tokio::main]
 async fn main() {
