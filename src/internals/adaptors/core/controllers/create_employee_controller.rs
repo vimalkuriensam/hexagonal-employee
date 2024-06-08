@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::models::{db::AppState, employee_models::EmployeeRequest};
+use crate::models::{db_models::AppState, employee_models::EmployeeRequest};
 use axum::{extract::State, response::IntoResponse, Json};
 use uuid::Uuid;
 
