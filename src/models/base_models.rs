@@ -1,11 +1,11 @@
 use std::{collections::HashMap, fmt, str::FromStr, sync::Arc};
 
-use sqlx::PgPool;
+use sqlx::PgConnection;
 
 #[derive(Debug, Default, Clone)]
 pub struct Config {
     pub env: HashMap<String, String>,
-    pub database: Option<Arc<PgPool>>,
+    pub database: Option<Arc<PgConnection>>,
 }
 
 #[derive(Debug, Clone)]
