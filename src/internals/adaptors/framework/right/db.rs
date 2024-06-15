@@ -27,20 +27,23 @@ fn load_key(key: &str, env: &HashMap<String, String>) -> Result<String, DBError>
 impl DBPort for Adaptor {
     async fn connect(&self) -> Result<(), DBError> {
         let env = &self.config.get_config().env;
-        let port = load_key("port", env)?
+        let port = load_key("db_port", env)?
             .parse::<u16>()
             .map_err(|_| DBError::InvalidFormat)?;
-        let host = load_key("host", env)?;
-        let username = load_key("username", env)?;
-        let password = load_key("password", env)?;
-        let db_name = load_key("db_name", env)?;
+        let host = load_key("db_host", env)?;
+        let username = load_key("db_username", env)?;
+        let password = load_key("db_password", env)?;
+        let db_name = load_key("db_database", env)?;
         let db_url = format!(
             "postgresql://{}:{}?dbname={}&user={}&password={}",
             host, port, db_name, username, password
         );
-        let connection = PgConnection::connect(&db_url).await.unwrap();
+        let connection = PgConnection::connect(&db_url)
+            .await
+            .map_err(|e| DBError::ConnectionRefused(e.to_string()))?;
         let mut config = self.config.get_config();
         config.database = Some(Arc::new(connection));
+        println!("db connected...");
         Ok(())
     }
 }

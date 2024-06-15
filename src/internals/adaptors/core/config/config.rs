@@ -26,13 +26,13 @@ pub fn initialize() -> Box<Adaptor> {
     args.config = Arc::new(Mutex::new(config));
     Box::new(args)
 }
+
 impl ConfigPort for Adaptor {
     fn load_environment(&mut self) -> Result<Box<Adaptor>, String> {
         if matches!(self.environment, EnvironmentType::Production) {
         } else {
             let path = std::env::current_dir().unwrap();
             let file_dir = format!("{}/environment/{}.env", path.display(), self.environment);
-            println!("{}", file_dir);
             match from_filename_iter(file_dir) {
                 Ok(iter_val) => {
                     let mut config = self.config.lock().unwrap();

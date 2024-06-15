@@ -7,7 +7,7 @@ use internals::{
             right::db,
         },
     },
-    ports::{framework_left::ServerPort, framework_right::DBPort},
+    ports::{core::*, framework_left::*, framework_right::*},
 };
 
 mod error;
@@ -16,15 +16,18 @@ mod internals;
 mod models;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), String> {
     // Initialize the configuration
-    let config = config::initialize();
+    let config = &mut config::initialize().load_environment()?;
     // Initilize the db adaptor
-    let db_adaptor = db::initialize(config);
-    let connection = db_adaptor.connect().await.map_err(collect_error);
-    if connection.is_err() {
-        panic!("{:?}", connection.err());
-    }
+    let db_adaptor = db::initialize(config.clone());
+    db_adaptor
+        .connect()
+        .await
+        .map_err(|e| collect_error(e.into()))?;
     let routes_adaptor = routes::routes::initialize();
-    server::server::initialize(routes_adaptor).serve().await;
+    server::server::initialize(routes_adaptor, config.clone())
+        .serve()
+        .await
+        .map_err(|e| collect_error(e.into()))
 }
