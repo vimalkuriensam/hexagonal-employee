@@ -1,13 +1,18 @@
 use error::collect_error;
 use internals::{
     adaptors::{
-        core::config::config,
+        app::base_app,
+        core::{config::config, controllers::base_controller},
         framework::{
             left::{routes, server},
             right::db,
         },
     },
-    ports::{core::*, framework_left::*, framework_right::*},
+    ports::{
+        core::{ConfigPort, EmployeeController},
+        framework_left::*,
+        framework_right::*,
+    },
 };
 
 mod error;
@@ -25,7 +30,9 @@ async fn main() -> Result<(), String> {
         .connect()
         .await
         .map_err(|e| collect_error(e.into()))?;
-    let routes_adaptor = routes::routes::initialize();
+    let ctrl_adaptor = base_controller::initialize();
+    let api_adaptor = base_app::initialize(config.clone(), ctrl_adaptor);
+    let routes_adaptor = routes::routes::initialize(api_adaptor);
     server::server::initialize(routes_adaptor, config.clone())
         .serve()
         .await

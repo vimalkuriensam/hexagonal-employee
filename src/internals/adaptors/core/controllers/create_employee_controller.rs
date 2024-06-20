@@ -1,19 +1,11 @@
-use std::sync::Arc;
 
-use crate::models::{db_models::AppState, employee_models::EmployeeRequest};
-use axum::{extract::State, response::IntoResponse, Json};
-use uuid::Uuid;
+
+use crate::internals::ports::core::CreateEmployeeController;
 
 use super::base_controller::Adaptor;
 
-impl Adaptor {
-    fn create_employee(
-        &self,
-        State(data): State<Arc<AppState>>,
-        Json(body): Json<EmployeeRequest>,
-    ) {
-        let id = Uuid::new_v4().to_string();
-        
+impl CreateEmployeeController for Adaptor {
+    fn create_employee(&self) {
         todo!()
     }
 }
